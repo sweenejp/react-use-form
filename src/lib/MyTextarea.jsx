@@ -1,20 +1,20 @@
 import React from 'react';
 
-/** @typedef {React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>} InputAttributes */
+/** @typedef {React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>} TextareaAttributes */
 
 /**
  * @typedef PropsI
  * @property {string} label
  * @property {string} name
  * @property {string} [error]
- * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} [validate]
+ * @property {(event: React.ChangeEvent<HTMLTextAreaElement>) => void} [validate]
  */
 
 /**
- * @param {InputAttributes & PropsI} props
+ * @param {TextareaAttributes & PropsI} props
  */
-const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
-  /** @param {React.ChangeEvent<HTMLInputElement>} event */
+const MyTextarea = ({ label, error, onChange, onBlur, validate, ...rest }) => {
+  /** @param {React.ChangeEvent<HTMLTextAreaElement>} event */
   function handleChange(event) {
     if (!event.target) {
       return;
@@ -30,7 +30,7 @@ const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
     validate?.(event);
   }
 
-  /** @param {React.FocusEvent<HTMLInputElement, Element>} event */
+  /** @param {React.FocusEvent<HTMLTextAreaElement, Element>} event */
   function handleBlur(event) {
     if (!event.target) {
       return;
@@ -51,7 +51,7 @@ const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
       }}
     >
       {label}
-      <input onChange={handleChange} onBlur={handleBlur} {...rest} />
+      <textarea onChange={handleChange} onBlur={handleBlur} {...rest} />
       {error && (
         <p style={{ color: 'darkred', margin: 0, padding: 0 }}>{error}</p>
       )}
@@ -59,4 +59,4 @@ const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
   );
 };
 
-export default MyInput;
+export default MyTextarea;

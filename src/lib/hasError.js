@@ -1,5 +1,5 @@
 /**
- * @param {HTMLInputElement | null} field
+ * @param {HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null} field
  * @author Chris Fernandi https://css-tricks.com/form-validation-part-2-constraint-validation-api-javascript/
  * */
 export default function hasError(field) {

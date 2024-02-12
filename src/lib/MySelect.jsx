@@ -1,20 +1,28 @@
 import React from 'react';
 
-/** @typedef {React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>} InputAttributes */
+/** @typedef {React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>} InputAttributes */
 
 /**
  * @typedef PropsI
  * @property {string} label
  * @property {string} name
  * @property {string} [error]
- * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} [validate]
+ * @property {(event: React.ChangeEvent<HTMLSelectElement>) => void} [validate]
  */
 
 /**
  * @param {InputAttributes & PropsI} props
  */
-const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
-  /** @param {React.ChangeEvent<HTMLInputElement>} event */
+const MySelect = ({
+  label,
+  error,
+  onChange,
+  onBlur,
+  validate,
+  children,
+  ...rest
+}) => {
+  /** @param {React.ChangeEvent<HTMLSelectElement>} event */
   function handleChange(event) {
     if (!event.target) {
       return;
@@ -30,7 +38,7 @@ const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
     validate?.(event);
   }
 
-  /** @param {React.FocusEvent<HTMLInputElement, Element>} event */
+  /** @param {React.FocusEvent<HTMLSelectElement, Element>} event */
   function handleBlur(event) {
     if (!event.target) {
       return;
@@ -51,7 +59,9 @@ const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
       }}
     >
       {label}
-      <input onChange={handleChange} onBlur={handleBlur} {...rest} />
+      <select onChange={handleChange} onBlur={handleBlur} {...rest}>
+        {children}
+      </select>
       {error && (
         <p style={{ color: 'darkred', margin: 0, padding: 0 }}>{error}</p>
       )}
@@ -59,4 +69,4 @@ const MyInput = ({ label, error, onChange, onBlur, validate, ...rest }) => {
   );
 };
 
-export default MyInput;
+export default MySelect;

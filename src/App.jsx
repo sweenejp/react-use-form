@@ -2,6 +2,8 @@ import React from 'react';
 import MyInput from './lib/MyInput';
 import useForm from './lib/useForm';
 import mockFetch from './lib/mockFetch';
+import MyTextarea from './lib/MyTextarea';
+import MySelect from './lib/MySelect';
 
 const App = () => {
   const { register, isValid, handleSubmit } = useForm(
@@ -21,7 +23,7 @@ const App = () => {
         value: '',
         error: '',
         validator: (emailCcValue, formValues) => {
-          if (emailCcValue === formValues?.email) {
+          if (emailCcValue && emailCcValue === formValues?.email) {
             return 'please provide a different email than the main email';
           }
           return '';
@@ -39,10 +41,19 @@ const App = () => {
         value: '',
         error: '',
       },
+      description: {
+        value: '',
+        error: '',
+      },
+      meal: {
+        value: '',
+        error: '',
+      },
     },
-    async (values, setErrors) => {
+    async (values, { setErrors }) => {
       const res = await mockFetch(values);
       setErrors(res.data);
+      console.log(values);
     }
   );
 
@@ -91,6 +102,13 @@ const App = () => {
         required
         {...register('puppies')}
       />
+      <MyTextarea label="Description" required {...register('description')} />
+      <MySelect label="Dinner choice" required {...register('meal')}>
+        <option></option>
+        <option value="chicken">Chicken</option>
+        <option value="fish">Fish</option>
+        <option value="veggie">Veggie</option>
+      </MySelect>
       <button disabled={!isValid}>Submit</button>
     </form>
   );

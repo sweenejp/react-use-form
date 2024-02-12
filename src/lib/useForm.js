@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import hasError from './hasError';
 
 /** @typedef {string | number | readonly string[]} Value */
@@ -7,10 +7,16 @@ import hasError from './hasError';
 /** @typedef {Record<string, Value>} Values */
 /** @typedef {Record<string, string | undefined>} Errors */
 /** @typedef {Record<string, Validator | undefined>} Validators */
+/** @typedef {HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement} InputElement */
+/**
+ * @typedef SubmitCallbacks
+ * @property {React.Dispatch<React.SetStateAction<Errors>>} setErrors
+ * @property {React.Dispatch<React.SetStateAction<Values>>} setValues
+ */
 
 /**
  * @param {Form} form
- * @param {(values: Record<string, Value>, setErrors: React.Dispatch<React.SetStateAction<Errors>>) => void} onSubmit
+ * @param {(values: Record<string, Value>, callbacks: SubmitCallbacks) => void} onSubmit
  * */
 const useForm = (form, onSubmit) => {
   /** @type {Values} */
@@ -29,13 +35,20 @@ const useForm = (form, onSubmit) => {
   const [values, setValues] = useState(initValues);
   const [errors, setErrors] = useState(initErrors);
 
-  /** @param {string} inputName */
-  const register = (inputName) => {
+  /**
+   * @param {string} inputName
+   * @param {object} [options]
+   * @param {(event: React.ChangeEvent<InputElement>) => void} [options.onChange]
+   * */
+  const register = (inputName, { onChange } = {}) => {
     const value = values[inputName];
     const error = errors[inputName];
 
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
-    const onChange = (event) => {
+    /** @param {React.ChangeEvent<InputElement>} event */
+    const handleChange = (event) => {
+      if (onChange) {
+        onChange(event);
+      }
       const { value } = event.target;
       setValues((prev) => ({
         ...prev,
@@ -43,7 +56,7 @@ const useForm = (form, onSubmit) => {
       }));
     };
 
-    /** @param {React.ChangeEvent<HTMLInputElement>} event */
+    /** @param {React.ChangeEvent<InputElement>} event */
     const validate = (event) => {
       const { value } = event.target;
 
@@ -60,8 +73,7 @@ const useForm = (form, onSubmit) => {
     return {
       value,
       error,
-      onChange,
-      // onBlur??
+      onChange: handleChange,
       validate,
       name: inputName,
     };
@@ -76,23 +88,29 @@ const useForm = (form, onSubmit) => {
     /** @type {Errors} */
     const newErrors = {};
 
-    // @ts-ignore
-    event.target.querySelectorAll('input').forEach((inputEl) => {
-      const validator = validators?.[inputEl.name] || function () {};
+    event.target
+      // @ts-ignore
+      .querySelectorAll('input, textarea, select')
+      .forEach(
+        (
+          /** @type {HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement} */ inputEl
+        ) => {
+          const validator = validators?.[inputEl.name] || function () {};
 
-      const error = validator(inputEl.value, values) || hasError(inputEl);
+          const error = validator(inputEl.value, values) || hasError(inputEl);
 
-      if (!error) {
-        return;
-      }
+          if (!error) {
+            return;
+          }
 
-      // focus the first input that has an error
-      if (Object.values(newErrors).every((err) => !err)) {
-        inputEl.focus();
-      }
+          // focus the first input that has an error
+          if (Object.values(newErrors).every((err) => !err)) {
+            inputEl.focus();
+          }
 
-      newErrors[inputEl.name] = error;
-    });
+          newErrors[inputEl.name] = error;
+        }
+      );
 
     setErrors(newErrors);
 
@@ -100,7 +118,7 @@ const useForm = (form, onSubmit) => {
       return;
     }
 
-    onSubmit(values, setErrors);
+    onSubmit(values, { setErrors, setValues });
   };
 
   return { register, isValid, handleSubmit };
