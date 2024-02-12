@@ -1,9 +1,9 @@
 import React from 'react';
-import MyInput from './lib/MyInput';
-import useForm from './lib/useForm';
-import mockFetch from './lib/mockFetch';
-import MyTextarea from './lib/MyTextarea';
-import MySelect from './lib/MySelect';
+import MyInput from './MyInput';
+import useForm from '../lib/useForm';
+import mockFetch from './mockFetch';
+import MyTextarea from './MyTextarea';
+import MySelect from './MySelect';
 
 const App = () => {
   const { register, isValid, handleSubmit } = useForm(
